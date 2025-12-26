@@ -45,41 +45,41 @@ class BotHandlers:
     async def start_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         """Handle /start command"""
         welcome_message = (
-            "👋 Welcome to **Chat Summarizer Bot**!\n\n"
+            "👋 Welcome to <b>Chat Summarizer Bot</b>!\n\n"
             "I can summarize your chat history in different styles.\n\n"
-            "**Commands:**\n"
-            "• `/summary [n]` - Summarize last n messages (default: 20)\n"
-            "• `/settings` - Change summary style\n"
-            "• `/stats` - View chat statistics\n"
-            "• `/help` - Show this help message\n\n"
+            "<b>Commands:</b>\n"
+            "• /summary [n] - Summarize last n messages (default: 20)\n"
+            "• /settings - Change summary style\n"
+            "• /stats - View chat statistics\n"
+            "• /help - Show this help message\n\n"
             "I'll automatically save messages for future summarization. "
-            "Just add me to a group and use `/summary` when you need a quick recap!"
+            "Just add me to a group and use /summary when you need a quick recap!"
         )
-        await update.message.reply_text(welcome_message, parse_mode='Markdown')
+        await update.message.reply_text(welcome_message, parse_mode='HTML')
     
     async def help_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         """Handle /help command"""
         help_message = (
-            "**Chat Summarizer Bot - Help**\n\n"
-            "**Commands:**\n"
-            "• `/summary` - Summarize last 20 messages\n"
-            "• `/summary 50` - Summarize last 50 messages\n"
-            "• `/settings` - Choose summary style:\n"
+            "<b>Chat Summarizer Bot - Help</b>\n\n"
+            "<b>Commands:</b>\n"
+            "• /summary - Summarize last 20 messages\n"
+            "• /summary 50 - Summarize last 50 messages\n"
+            "• /settings - Choose summary style:\n"
             "  - Professional: Clear and formal\n"
             "  - Funny: Humorous with emojis\n"
             "  - Executive: Brief, key points only\n"
             "  - Technical: Focus on technical details\n"
             "  - Casual: Friendly and conversational\n"
-            "• `/stats` - View chat statistics\n\n"
-            "**How it works:**\n"
-            "I automatically save messages from your chats. When you use `/summary`, "
+            "• /stats - View chat statistics\n\n"
+            "<b>How it works:</b>\n"
+            "I automatically save messages from your chats. When you use /summary, "
             "I analyze recent messages and create a concise summary based on your "
             "selected style.\n\n"
-            "**Privacy:**\n"
+            "<b>Privacy:</b>\n"
             f"Messages are stored for {config.storage_settings.message_retention_days} days, "
             "then automatically deleted."
         )
-        await update.message.reply_text(help_message, parse_mode='Markdown')
+        await update.message.reply_text(help_message, parse_mode='HTML')
     
     async def summary_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         """Handle /summary command"""
@@ -152,12 +152,12 @@ class BotHandlers:
                 f"{summary}"
             )
             
-            # Try to send with Markdown first, fallback to plain text if parsing fails
+            # Try to send with HTML first, fallback to plain text if parsing fails
             try:
-                await status_msg.edit_text(summary_text, parse_mode='Markdown')
-            except Exception as markdown_error:
-                # If Markdown parsing fails, send as plain text
-                logger.warning(f"Markdown parsing failed, sending as plain text: {markdown_error}")
+                await status_msg.edit_text(summary_text, parse_mode='HTML')
+            except Exception as html_error:
+                # If HTML parsing fails, send as plain text
+                logger.warning(f"HTML parsing failed, sending as plain text: {html_error}")
                 await status_msg.edit_text(summary_text)
             
         except Exception as e:
@@ -199,11 +199,11 @@ class BotHandlers:
         reply_markup = InlineKeyboardMarkup(keyboard)
         
         await update.message.reply_text(
-            f"⚙️ **Settings**\n\n"
-            f"Current style: **{current_style.value}**\n\n"
+            f"⚙️ <b>Settings</b>\n\n"
+            f"Current style: <b>{current_style.value}</b>\n\n"
             "Choose your preferred summary style:",
             reply_markup=reply_markup,
-            parse_mode='Markdown'
+            parse_mode='HTML'
         )
     
     async def settings_callback(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -221,10 +221,10 @@ class BotHandlers:
             await self.message_store.save_user_setting(user_id, 'summary_style', style.value)
             
             await query.edit_message_text(
-                f"✅ Summary style updated to: **{style.value}**\n\n"
+                f"✅ Summary style updated to: <b>{style.value}</b>\n\n"
                 f"Your preference has been saved and will persist across bot restarts!\n\n"
-                f"Use `/summary` to generate a summary in this style!",
-                parse_mode='Markdown'
+                f"Use /summary to generate a summary in this style!",
+                parse_mode='HTML'
             )
     
     async def stats_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -241,14 +241,14 @@ class BotHandlers:
             return
         
         stats_text = (
-            "📊 **Chat Statistics**\n\n"
-            f"• Total messages: **{stats['total_messages']}**\n"
-            f"• Unique users: **{stats['unique_users']}**\n"
+            "📊 <b>Chat Statistics</b>\n\n"
+            f"• Total messages: <b>{stats['total_messages']}</b>\n"
+            f"• Unique users: <b>{stats['unique_users']}</b>\n"
             f"• First message: {stats.get('first_message', 'N/A')}\n"
             f"• Latest message: {stats.get('last_message', 'N/A')}\n\n"
             f"Messages are retained for {config.storage_settings.message_retention_days} days."
         )
-        await update.message.reply_text(stats_text, parse_mode='Markdown')
+        await update.message.reply_text(stats_text, parse_mode='HTML')
     
     async def message_handler(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         """Handle incoming messages (for logging)"""

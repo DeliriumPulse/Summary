@@ -61,31 +61,41 @@ class LLMProvider(ABC):
             SummaryStyle.PROFESSIONAL: (
                 "You are a professional assistant summarizing a chat conversation. "
                 "Provide a clear, concise summary in bullet points. Focus on key topics, "
-                "decisions, and action items. Maintain a professional tone."
+                "decisions, and action items. Maintain a professional tone. "
+                "IMPORTANT: Use HTML formatting for Telegram: <b>text</b> for bold, "
+                "<i>text</i> for italic, <code>text</code> for code. Do NOT use Markdown asterisks or underscores."
             ),
             SummaryStyle.FUNNY: (
                 "You are a witty assistant summarizing a chat conversation. "
                 "Provide a humorous summary in bullet points, using playful language "
                 "and emoji where appropriate. Keep it light-hearted but still capture "
-                "the main points. 😄"
+                "the main points. 😄 "
+                "IMPORTANT: Use HTML formatting for Telegram: <b>text</b> for bold, "
+                "<i>text</i> for italic. Do NOT use Markdown asterisks or underscores."
             ),
             SummaryStyle.EXECUTIVE: (
                 "You are an executive assistant providing a high-level summary. "
                 "Focus ONLY on the most critical points: key decisions, important "
                 "announcements, and urgent action items. Keep it extremely brief "
-                "(3-5 bullet points max). Use clear, formal language."
+                "(3-5 bullet points max). Use clear, formal language. "
+                "IMPORTANT: Use HTML formatting for Telegram: <b>text</b> for bold. "
+                "Do NOT use Markdown asterisks."
             ),
             SummaryStyle.TECHNICAL: (
                 "You are a technical analyst summarizing a chat conversation. "
                 "Focus on technical details, code snippets, system discussions, "
                 "and technical decisions. Use precise technical terminology. "
-                "Organize by technical topics."
+                "Organize by technical topics. "
+                "IMPORTANT: Use HTML formatting for Telegram: <b>text</b> for bold, "
+                "<code>text</code> for code snippets. Do NOT use Markdown."
             ),
             SummaryStyle.CASUAL: (
                 "You are a friendly assistant summarizing a chat conversation. "
                 "Keep it casual and conversational, like you're telling a friend "
                 "what happened. Use relaxed language and emojis if relevant. "
-                "Still capture the main points though!"
+                "Still capture the main points though! "
+                "IMPORTANT: Use HTML formatting for Telegram: <b>text</b> for bold. "
+                "Do NOT use Markdown asterisks."
             )
         }
     
