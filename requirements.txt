@@ -1,0 +1,25 @@
+# Core Telegram Bot
+python-telegram-bot==21.8
+python-telegram-bot[job-queue]==21.8
+
+# LLM Providers
+google-generativeai==0.8.3
+openai==1.58.1
+anthropic==0.39.0
+
+# Database
+aiosqlite==0.20.0
+
+# Utilities
+python-dotenv==1.0.1
+pydantic==2.10.4
+pydantic-settings==2.6.1
+
+# Testing
+pytest==8.3.4
+pytest-asyncio==0.24.0
+pytest-mock==3.14.0
+
+# Development
+black==24.10.0
+ruff==0.8.4

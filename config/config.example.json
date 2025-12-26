@@ -1,0 +1,20 @@
+{
+  "mode": "byok",
+  "llm_provider": "gemini",
+  "api_keys": {
+    "openai": "",
+    "anthropic": "",
+    "gemini": ""
+  },
+  "bot": {
+    "telegram_token": "",
+    "default_summary_count": 20,
+    "max_summary_count": 100,
+    "default_style": "Professional"
+  },
+  "storage": {
+    "message_retention_days": 30,
+    "cleanup_interval_hours": 24,
+    "database_path": "data/messages.db"
+  }
+}
