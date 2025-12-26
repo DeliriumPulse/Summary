@@ -148,10 +148,17 @@ class BotHandlers:
             
             # Send summary
             summary_text = (
-                f"📊 **Summary of last {len(messages)} messages** ({style.value} style)\n\n"
+                f"📊 Summary of last {len(messages)} messages ({style.value} style)\n\n"
                 f"{summary}"
             )
-            await status_msg.edit_text(summary_text, parse_mode='Markdown')
+            
+            # Try to send with Markdown first, fallback to plain text if parsing fails
+            try:
+                await status_msg.edit_text(summary_text, parse_mode='Markdown')
+            except Exception as markdown_error:
+                # If Markdown parsing fails, send as plain text
+                logger.warning(f"Markdown parsing failed, sending as plain text: {markdown_error}")
+                await status_msg.edit_text(summary_text)
             
         except Exception as e:
             logger.error(f"Error generating summary: {e}")
