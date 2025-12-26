@@ -48,6 +48,15 @@ class MessageStore:
                 )
             """)
             
+            # Create user settings table
+            await db.execute("""
+                CREATE TABLE IF NOT EXISTS user_settings (
+                    user_id INTEGER PRIMARY KEY,
+                    summary_style TEXT NOT NULL DEFAULT 'Professional',
+                    updated_at DATETIME NOT NULL
+                )
+            """)
+            
             # Create index for faster queries
             await db.execute("""
                 CREATE INDEX IF NOT EXISTS idx_chat_timestamp 
@@ -222,3 +231,56 @@ class MessageStore:
         except Exception as e:
             logger.error(f"Error getting chat statistics: {e}")
             return {}
+    
+    async def save_user_setting(self, user_id: int, setting_name: str, setting_value: str) -> bool:
+        """
+        Save a user setting to the database
+        
+        Args:
+            user_id: User ID
+            setting_name: Name of the setting (e.g., 'summary_style')
+            setting_value: Value to save
+        
+        Returns:
+            True if saved successfully, False otherwise
+        """
+        try:
+            async with aiosqlite.connect(self.db_path) as db:
+                if setting_name == 'summary_style':
+                    await db.execute("""
+                        INSERT INTO user_settings (user_id, summary_style, updated_at)
+                        VALUES (?, ?, ?)
+                        ON CONFLICT(user_id) DO UPDATE SET
+                            summary_style = excluded.summary_style,
+                            updated_at = excluded.updated_at
+                    """, (user_id, setting_value, datetime.now()))
+                    await db.commit()
+                    return True
+        except Exception as e:
+            logger.error(f"Error saving user setting: {e}")
+            return False
+    
+    async def get_user_setting(self, user_id: int, setting_name: str, default: str = None) -> Optional[str]:
+        """
+        Get a user setting from the database
+        
+        Args:
+            user_id: User ID
+            setting_name: Name of the setting
+            default: Default value if not found
+        
+        Returns:
+            Setting value or default
+        """
+        try:
+            async with aiosqlite.connect(self.db_path) as db:
+                if setting_name == 'summary_style':
+                    cursor = await db.execute("""
+                        SELECT summary_style FROM user_settings WHERE user_id = ?
+                    """, (user_id,))
+                    result = await cursor.fetchone()
+                    return result[0] if result else default
+        except Exception as e:
+            logger.error(f"Error getting user setting: {e}")
+            return default
+

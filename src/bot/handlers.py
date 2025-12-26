@@ -24,7 +24,6 @@ class BotHandlers:
         self.message_store = MessageStore(config.storage_settings.database_path)
         self.text_cleaner = TextCleaner()
         self.llm_provider = self._initialize_llm_provider()
-        self.user_settings = {}  # Store user-specific settings in-memory
     
     def _initialize_llm_provider(self):
         """Initialize the appropriate LLM provider based on config"""
@@ -131,8 +130,17 @@ class BotHandlers:
                 )
                 return
             
-            # Get user's preferred style
-            style = self.user_settings.get(user_id, {}).get('style', SummaryStyle.PROFESSIONAL)
+            # Get user's preferred style from database
+            style_name = await self.message_store.get_user_setting(
+                user_id, 
+                'summary_style', 
+                SummaryStyle.PROFESSIONAL.value
+            )
+            # Convert string to SummaryStyle enum
+            try:
+                style = SummaryStyle(style_name)
+            except (ValueError, KeyError):
+                style = SummaryStyle.PROFESSIONAL
             
             # Generate summary
             await status_msg.edit_text("✨ Generating summary...")
@@ -155,7 +163,17 @@ class BotHandlers:
     async def settings_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         """Handle /settings command"""
         user_id = update.effective_user.id
-        current_style = self.user_settings.get(user_id, {}).get('style', SummaryStyle.PROFESSIONAL)
+        
+        # Get current style from database
+        style_name = await self.message_store.get_user_setting(
+            user_id, 
+            'summary_style', 
+            SummaryStyle.PROFESSIONAL.value
+        )
+        try:
+            current_style = SummaryStyle(style_name)
+        except (ValueError, KeyError):
+            current_style = SummaryStyle.PROFESSIONAL
         
         # Create inline keyboard with style options
         keyboard = [
@@ -192,13 +210,12 @@ class BotHandlers:
             style_name = query.data.replace("style_", "")
             style = SummaryStyle[style_name]
             
-            # Update user settings
-            if user_id not in self.user_settings:
-                self.user_settings[user_id] = {}
-            self.user_settings[user_id]['style'] = style
+            # Save user settings to database
+            await self.message_store.save_user_setting(user_id, 'summary_style', style.value)
             
             await query.edit_message_text(
                 f"✅ Summary style updated to: **{style.value}**\n\n"
+                f"Your preference has been saved and will persist across bot restarts!\n\n"
                 f"Use `/summary` to generate a summary in this style!",
                 parse_mode='Markdown'
             )
